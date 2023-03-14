@@ -1,5 +1,9 @@
-export const ImageGalleryItem = () => {
-  <li class="gallery-item">
-    <img src="" alt="" />
-  </li>;
+import style from './style.module.css';
+
+export const ImageGalleryItem = ({ imageSrc, imageAlt }) => {
+  return (
+    <li className={style.galleryitem}>
+      <img src={imageSrc} alt={imageAlt} className={style.image} />
+    </li>
+  );
 };
