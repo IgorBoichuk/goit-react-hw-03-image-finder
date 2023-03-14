@@ -2,7 +2,7 @@ import { ImageGalleryItem } from 'components/image-gallery-item/ImageGalleryItem
 
 import style from './style.module.css';
 
-export const ImageGallery = ({ imgStore }) => {
+export const ImageGallery = ({ imgStore, onPictureClick, key }) => {
   const galleryElements = imgStore.map(image => {
     return (
       <ImageGalleryItem
@@ -12,6 +12,10 @@ export const ImageGallery = ({ imgStore }) => {
       />
     );
   });
-  // console.log(galleryElements);
-  return <ul className={style.gallery}>{galleryElements}</ul>;
+  console.log(galleryElements);
+  return (
+    <ul className={style.gallery} onClick={onPictureClick}>
+      {galleryElements}
+    </ul>
+  );
 };
