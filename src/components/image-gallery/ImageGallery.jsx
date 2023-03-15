@@ -12,7 +12,7 @@ export const ImageGallery = ({ imgStore, onPictureClick, key }) => {
       />
     );
   });
-  console.log(galleryElements);
+  // console.log(galleryElements);
   return (
     <ul className={style.gallery} onClick={onPictureClick}>
       {galleryElements}
