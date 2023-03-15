@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import Scroll from 'react-scroll';
 import { Searchbar } from './searchbar/Searchbar';
 import { ImageGallery } from './image-gallery/ImageGallery';
 import { LoadMoreBtn } from './button/Button';
@@ -12,10 +13,16 @@ export class App extends Component {
     loading: false,
     imgStore: [],
     page: 1,
-    perPage: 6,
-    largeImg: [],
+    perPage: 5,
+    largeImg: null,
     error: null,
+    isQuery: 'start',
+    typeRequest: '',
+    modalOpen: 'close',
   };
+
+  scroll = Scroll.animateScroll;
+  // badQuary, seccefull
 
   myAPI_KEY = '33589434-498505a5cafca5b4759d2d286';
   getImageApi = (query = this.state.query) => {
@@ -25,15 +32,27 @@ export class App extends Component {
         `https://pixabay.com/api/?q=${query}&page=${this.state.page}&key=${this.myAPI_KEY}&image_type=photo&orientation=horizontal&per_page=${this.state.perPage}`
       )
 
-      .then(response =>
-        this.setState({
-          ...this.state,
-          loading: false,
-          imgStore: response.data.hits,
-        })
-      )
-      .catch(error => this.setState({ error: error.message }))
-      .finally(this.setState({ loading: false }));
+      .then(response => {
+        console.log(this.state.typeRequest);
+        if (this.state.typeRequest === 'search') {
+          this.setState({
+            ...this.state,
+            loading: false,
+            isQuery: response.data.hits.length !== 0 ? 'seccefull' : 'badQuary',
+            imgStore: [...response.data.hits],
+          });
+        } else {
+          this.setState({
+            ...this.state,
+            loading: false,
+            isQuery: response.data.hits.length !== 0 ? 'seccefull' : 'badQuary',
+            imgStore: [...this.state.imgStore, ...response.data.hits],
+          });
+        }
+        this.scroll.scrollToBottom();
+      })
+      .catch(error => this.setState({ error: error.message }));
+    // .finally(this.setState({ loading: false }));
   };
 
   componentDidUpdate() {
@@ -47,6 +66,7 @@ export class App extends Component {
       query,
       page: 1,
       loading: true,
+      typeRequest: 'search',
     });
     this.getImageApi(query);
   };
@@ -56,11 +76,13 @@ export class App extends Component {
       ...this.state,
       loading: true,
       page: this.state.page + 1,
+      typeRequest: 'loadMore',
     });
   };
 
-  onPictureClick = event => {
-    console.log(event.currentTarget);
+  onPictureClick = imgSrc => {
+    console.log(imgSrc);
+    this.setState({ ...this.state, modalOpen: 'open', largeImg: imgSrc });
   };
 
   render() {
@@ -68,7 +90,7 @@ export class App extends Component {
     return (
       <div>
         <Searchbar onSubmit={this.onSubmitForm} />
-        {this.state.loading && <Loader />}
+
         {!this.state.loading && (
           <ImageGallery
             imgStore={this.state.imgStore}
@@ -76,8 +98,10 @@ export class App extends Component {
           />
         )}
         {this.state.error ||
-          (this.state.imgStore.length === 0 && <h1>Is bad query</h1>)}
-        <Modal largeImg={this.state.largeImg} />
+          (this.state.isQuery === 'badQuary' && <h1>Is bad query</h1>)}
+        {this.state.modalOpen === 'open' && (
+          <Modal largeImg={this.state.largeImg} />
+        )}
 
         <LoadMoreBtn
           onLoadMoreHandler={this.onLoadMoreHandler}
@@ -85,6 +109,7 @@ export class App extends Component {
             this.state.imgStore.length < this.state.perPage ? false : true
           }
         />
+        {this.state.loading && <Loader />}
       </div>
     );
   }
