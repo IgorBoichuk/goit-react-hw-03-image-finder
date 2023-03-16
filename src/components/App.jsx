@@ -13,7 +13,7 @@ export class App extends Component {
     loading: false,
     imgStore: [],
     page: 1,
-    perPage: 5,
+    perPage: 12,
     largeImg: null,
     error: null,
     isQuery: 'start',
@@ -33,7 +33,6 @@ export class App extends Component {
       )
 
       .then(response => {
-        console.log(this.state.typeRequest);
         if (this.state.typeRequest === 'search') {
           this.setState({
             ...this.state,
@@ -81,23 +80,30 @@ export class App extends Component {
   };
 
   onPictureClick = img => {
-    this.setState({ ...this.state, modalOpen: 'open', largeImg: img.target.src });
+    this.setState({
+      ...this.state,
+      modalOpen: 'open',
+      largeImg: img.target.src,
+    });
   };
-  onHandleCloseModal = () => {
+  onHandleCloseModal = e => {
     if (this.state.modalOpen === 'open') {
       this.setState({
         ...this.state,
-        largeImg: null, 
+        largeImg: null,
         modalOpen: 'closed',
-      })
+      });
     }
-  }
-  render() {
+  };
+  onEscCloseModal = e => {
+    if (e.key === 'Escape') {
+      this.onHandleCloseModal();
+    }
+  };
 
+  render() {
     return (
-      <div 
-        onClick={this.onHandleCloseModal}
-      >
+      <div onClick={this.onHandleCloseModal}>
         <Searchbar onSubmit={this.onSubmitForm} />
 
         {!this.state.loading && (
@@ -109,7 +115,10 @@ export class App extends Component {
         {this.state.error ||
           (this.state.isQuery === 'badQuary' && <h1>Is bad query</h1>)}
         {this.state.modalOpen === 'open' && (
-          <Modal largeImg={this.state.largeImg} />
+          <Modal
+            largeImg={this.state.largeImg}
+            onEscCloseModal={this.onEscCloseModal}
+          />
         )}
 
         <LoadMoreBtn
