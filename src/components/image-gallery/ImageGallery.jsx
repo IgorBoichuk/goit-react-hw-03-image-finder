@@ -9,7 +9,7 @@ export const ImageGallery = ({ imgStore, onPictureClick, key }) => {
         key={image.id}
         imageSrc={image.webformatURL}
         imageAlt={image.tags}
-        onPictureClick={onPictureClick}
+        onClick = {(event) => {onPictureClick(event)}}
       />
     );
   });

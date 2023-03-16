@@ -80,15 +80,24 @@ export class App extends Component {
     });
   };
 
-  onPictureClick = imgSrc => {
-    console.log(imgSrc);
-    this.setState({ ...this.state, modalOpen: 'open', largeImg: imgSrc });
+  onPictureClick = img => {
+    this.setState({ ...this.state, modalOpen: 'open', largeImg: img.target.src });
   };
-
+  onHandleCloseModal = () => {
+    if (this.state.modalOpen === 'open') {
+      this.setState({
+        ...this.state,
+        largeImg: null, 
+        modalOpen: 'closed',
+      })
+    }
+  }
   render() {
-    // console.log(this.state.imgStore);
+
     return (
-      <div>
+      <div 
+        onClick={this.onHandleCloseModal}
+      >
         <Searchbar onSubmit={this.onSubmitForm} />
 
         {!this.state.loading && (
